@@ -181,7 +181,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: New Text
+  m_text: <alpha=#80>New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: d4f13a256f4327545af51e2034645456, type: 2}
   m_sharedMaterial: {fileID: -7100597928385160697, guid: d4f13a256f4327545af51e2034645456, type: 2}
@@ -547,7 +547,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _textUi: {fileID: 296275350}
   _message: "\u96E8\u30CB\u30E2\u30DE\u30B1\u30BA\u98A8\u30CB\u30E2\u30DE\u30B1\u30BA\u96EA\u30CB\u30E2\u590F\u30CE\u6691\u30B5\u30CB\u30E2\u30DE\u30B1\u30CC\u4E08\u592B\u30CA\u30AB\u30E9\u30C0\u30F2\u30E2\u30C1\u617E\u30CF\u30CA\u30AF\u6C7A\u30B7\u30C6\u778B\u30E9\u30BA\u30A4\u30C4\u30E2\u30B7\u30C5\u30AB\u30CB\u30EF\u30E9\u30C3\u30C6\u30F0\u30EB"
-  _speed: 3
+  _speed: 1
 --- !u!1 &1879945857
 GameObject:
   m_ObjectHideFlags: 0

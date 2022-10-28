@@ -19,25 +19,24 @@ public class MessagePrinter : MonoBehaviour
     // 何も指していない場合は -1 とする。
     private int _currentIndex = -1;
 
-    bool _isPrint= false;
-    public bool IsPrinting => _isPrint;
+    public bool IsPrinting
+    {
+        get
+        {
+            // TODO: ここにコードを書く
+            if(_message is null or { Length : 0}) return false;
+            return _currentIndex+1 < _message.Length;
+        }
+    }
 
     private void Start()
     {
-        //ShowMessage(_message);
+        ShowMessage(_message);
     }
 
     private void Update()
     {
-        if (_textUi is null || _message is null || _currentIndex + 1 >= _message.Length) 
-        {
-            _isPrint = false;
-            return; 
-        }
-        else
-        {
-            _isPrint = true;
-        }
+        if (_textUi is null || _message is null || _currentIndex + 1 >= _message.Length) { return; }
 
         _elapsed += Time.deltaTime;
         if (_elapsed > _interval)
@@ -55,6 +54,21 @@ public class MessagePrinter : MonoBehaviour
     public void ShowMessage(string message)
     {
         // TODO: ここにコードを書く
+        _textUi.text = "";
+        _currentIndex = -1;
         _message = message;
+        _interval = _message is null or { Length : 0} ? 0 : _speed / _message.Length;
+    }
+
+    /// <summary>
+    /// 現在再生中の文字出力を省略する。
+    /// </summary>
+    public void Skip()
+    {
+        // TODO: ここにコードを書く
+        if (_message is null) { return; }
+
+        _currentIndex = _message.Length;
+        _textUi.text = _message;
     }
 }
