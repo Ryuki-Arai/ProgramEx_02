@@ -1,83 +1,81 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
+public class SkipRequestSource
+{
+    /// <summary>
+    /// スキップ判定用のトークンを返す。
+    /// </summary>
+    public SkipRequestToken Token
+        => new SkipRequestToken(this);
+
+    /// <summary>
+    /// スキップを要求されている場合は true。
+    /// </summary>
+    public bool IsSkipRequested { get; private set; }
+
+    /// <summary>
+    /// スキップを要求する。
+    /// </summary>
+    public void Skip() { IsSkipRequested = true; }
+}
+
+public struct SkipRequestToken
+{
+    private SkipRequestSource _source;
+
+    public SkipRequestToken(SkipRequestSource source)
+        => _source = source;
+
+    /// <summary>
+    /// スキップを要求されている場合は true。
+    /// </summary>
+    public bool IsSkipRequested => _source.IsSkipRequested;
+}
+
 public class Sample : MonoBehaviour
 {
+    [SerializeField]
+    private Actor _actor = default;
+
     private void Start()
     {
-        StartCoroutine(ExecuteAsync());
+        StartCoroutine(RunAsync());
     }
 
-    private IEnumerator ExecuteAsync()
+    private IEnumerator RunAsync()
     {
-        Debug.Log("ExecuteAsync: Begin");
-
         while (true)
         {
-            // X軸の回転を2秒間
-            yield return RotateAsync(Vector3.right, 2);
+            var skipSource = new SkipRequestSource();
+            StartCoroutine(SkipIfClicked(skipSource));
+            yield return _actor.FadeOut(2, skipSource.Token); // 2秒かけてフェードアウト
 
-            // 5秒間待機する・またはクリックされるのを待つ
-            yield return WhenAny(new WaitForSeconds(5), StartCoroutine(WaitMouseButton(0)));
+            yield return WaitClick(); // クリックを待つ
+            yield return null; // 直前の GetMouseButtonDown が連続しないように1フレーム待つ
 
-            // Y軸の回転を2秒間
-            yield return RotateAsync(Vector3.up, 2);
+            skipSource = new SkipRequestSource();
+            StartCoroutine(SkipIfClicked(skipSource));
+            yield return _actor.FadeIn(2, skipSource.Token); // ２秒かけてフェードイン
 
-            // 5秒間待機する・またはクリックされるのを待つ
-            yield return WhenAny(new WaitForSeconds(5), StartCoroutine(WaitMouseButton(0)));
-
-            // Z軸の回転を2秒間
-            yield return RotateAsync(Vector3.forward, 2);
-
-            // 5秒間待機する・またはクリックされるのを待つ
-            yield return WhenAny(new WaitForSeconds(5), StartCoroutine(WaitMouseButton(0)));
-        }
-
-        // Debug.Log("ExecuteAsync: End");
-    }
-
-    private IEnumerator RotateAsync(Vector3 eulers, float duration)
-    {
-        Debug.Log($"RotateAsync: Begin eulers={eulers}, duration={duration}");
-        var t = 0F;
-        while (t < duration)
-        {
-            t += Time.deltaTime;
-            transform.Rotate(eulers);
+            yield return WaitClick(); // クリックを待つ
             yield return null;
         }
-        Debug.Log("ExecuteAsync: End");
     }
 
-    private IEnumerator WaitClick(float timeout)
+    private IEnumerator SkipIfClicked(SkipRequestSource skipSource)
     {
-        Debug.Log($"WaitClick: Begin timeout={timeout}");
-        var t = 0F;
-        while (t < timeout)
-        {
-            t += Time.deltaTime;
-            yield return null;
-            if (Input.GetMouseButton(0)) { break; }
-        }
-        Debug.Log($"WaitClick: End");
+        while (!IsSkipRequested()) { yield return null; }
+        skipSource.Skip();
     }
 
-    private IEnumerator WaitMouseButton(int button)
+    private IEnumerator WaitClick()
     {
-        while (!Input.GetMouseButtonDown(button)) { yield return null; }
-    }
-    private IEnumerator Then(YieldInstruction c, Action completed)
-    {
-        yield return c;
-        completed();
+        while (!IsSkipRequested()) { yield return null; }
     }
 
-    private IEnumerator WhenAny(YieldInstruction c1, YieldInstruction c2)
+    private static bool IsSkipRequested()
     {
-        var result = false; // c1 または c2 が終わると true になる
-        StartCoroutine(Then(c1, () => result = true));
-        StartCoroutine(Then(c2, () => result = true));
-        while (!result) { yield return null; }
+        return Input.GetMouseButtonDown(0);
     }
 }
