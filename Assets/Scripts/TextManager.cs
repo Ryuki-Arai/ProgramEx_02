@@ -21,6 +21,11 @@ public class TextManager : MonoBehaviour
         TextWrite(text[0]);
     }
 
+    public void TextWrite()
+    {
+        TextWrite(text[0]);
+    }
+
     private void TextWrite(string _text)
     {
         if (_text.Length <= i) return;

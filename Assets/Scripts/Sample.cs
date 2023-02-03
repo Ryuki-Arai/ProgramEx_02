@@ -37,6 +37,10 @@ public class Sample : MonoBehaviour
 {
     [SerializeField]
     private Actor _actor = default;
+    [SerializeField]
+    private TextManager _textManager = default;
+    [SerializeField]
+    private BackGroundSequencer _backGroundSequencer = default;
 
     private void Start()
     {
@@ -49,17 +53,17 @@ public class Sample : MonoBehaviour
         {
             var skipSource = new SkipRequestSource();
             StartCoroutine(SkipIfClicked(skipSource));
-            yield return _actor.FadeOut(2, skipSource.Token); // 2秒かけてフェードアウト
+            yield return _actor.FadeIn(2, skipSource.Token); // ２秒かけてフェードイン
 
             yield return WaitClick(); // クリックを待つ
             yield return null; // 直前の GetMouseButtonDown が連続しないように1フレーム待つ
 
             skipSource = new SkipRequestSource();
             StartCoroutine(SkipIfClicked(skipSource));
-            yield return _actor.FadeIn(2, skipSource.Token); // ２秒かけてフェードイン
+            yield return _actor.FadeOut(2, skipSource.Token); // 2秒かけてフェードアウト
 
             yield return WaitClick(); // クリックを待つ
-            yield return null;
+            yield return null; // 直前の GetMouseButtonDown が連続しないように1フレーム待つ
         }
     }
 
